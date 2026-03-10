@@ -1,0 +1,10 @@
+def run_lengths(signal, threshold):
+    state = signal > threshold
+    changes = np.diff(np.concatenate([[False], state, [False]]).astype(int))
+    starts = np.where(changes == 1)[0]
+    ends = np.where(changes == -1)[0]
+    return ends - starts  # duration in same state
+
+runs = run_lengths(spread, np.median(spread))
+print(f"Mean duration: {runs.mean():.1f} obs")
+print(f"Median: {np.median(runs):.1f}, 90th pctl: {np.percentile(runs, 90):.1f}")
