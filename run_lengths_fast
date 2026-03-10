@@ -1,0 +1,15 @@
+import numpy as np
+
+def run_lengths_fast(signal):
+    """Vectorized version for numeric or categorical arrays."""
+    signal = np.asarray(signal)
+    if len(signal) == 0:
+        return []
+    
+    # Find positions where state changes
+    change_idx = np.where(np.concatenate([[True], signal[1:] != signal[:-1], [True]]))[0]
+    
+    states = signal[change_idx[:-1]]
+    lengths = np.diff(change_idx)
+    
+    return list(zip(states, lengths))
