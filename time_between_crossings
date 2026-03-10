@@ -1,0 +1,16 @@
+def time_between_crossings(signal, level):
+    crossings = np.where(np.diff(np.sign(signal - level)))[0]
+    return np.diff(crossings)  # periods between state changes
+
+durations = time_between_crossings(spread - spread.mean(), 0)
+
+def time_between_crossings(signal, level):
+    crossings = np.where(np.diff(np.sign(signal - level)))[0]
+    return np.diff(crossings)  # periods between state changes
+
+durations = time_between_crossings(spread - spread.mean(), 0)
+
+def trend_durations(signal, window=20):
+    trend = signal.rolling(window).apply(lambda x: np.polyfit(range(len(x)), x, 1)[0])
+    trend_state = trend > 0
+    return run_lengths(trend_state, 0.5)
