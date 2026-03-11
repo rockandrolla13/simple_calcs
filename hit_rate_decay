@@ -1,0 +1,18 @@
+def hit_rate_decay(forecast, actuals, max_horizon=20):
+    """
+    Compute hit rate at each forecast horizon.
+    
+    Returns
+    -------
+    horizons : array
+    hit_rates : array
+    """
+    horizons = np.arange(1, max_horizon + 1)
+    hrs = []
+    
+    for h in horizons:
+        pred = np.sign(forecast[:-h])
+        act = np.sign(actuals[h:])
+        hrs.append((pred == act).mean())
+    
+    return horizons, np.array(hrs)
