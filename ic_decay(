@@ -1,0 +1,22 @@
+from scipy.stats import spearmanr, pearsonr
+
+def ic_decay(forecast, actuals, max_horizon=20, method='spearman'):
+    """
+    Compute Information Coefficient at each horizon.
+    """
+    horizons = np.arange(1, max_horizon + 1)
+    ics = []
+    
+    for h in horizons:
+        valid = ~(np.isnan(forecast[:-h]) | np.isnan(actuals[h:]))
+        f = forecast[:-h][valid]
+        a = actuals[h:][valid]
+        
+        if method == 'spearman':
+            ic, _ = spearmanr(f, a)
+        else:
+            ic, _ = pearsonr(f, a)
+        
+        ics.append(ic)
+    
+    return horizons, np.array(ics)
