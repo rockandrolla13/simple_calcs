@@ -1,0 +1,49 @@
+import numpy as np
+
+def hit_rate(predictions, actuals, mask=None, ignore_nan=True):
+    """
+    Compute exact-match hit rate between predictions and actuals.
+
+    Parameters
+    ----------
+    predictions : array-like
+        Predicted signal values.
+    actuals : array-like
+        Realized signal values.
+    mask : array-like of bool, optional
+        Boolean mask indicating which observations to include.
+    ignore_nan : bool, default=True
+        If True, exclude observations where either predictions or actuals is NaN.
+
+    Returns
+    -------
+    float
+        Fraction of included observations where prediction equals actual.
+
+    Raises
+    ------
+    ValueError
+        If inputs do not have the same length or no valid observations remain.
+    """
+    pred = np.asarray(predictions)
+    act = np.asarray(actuals)
+
+    if pred.shape != act.shape:
+        raise ValueError(f"`predictions` and `actuals` must have the same shape, got {pred.shape} and {act.shape}.")
+
+    if mask is None:
+        valid = np.ones(pred.shape, dtype=bool)
+    else:
+        valid = np.asarray(mask, dtype=bool)
+        if valid.shape != pred.shape:
+            raise ValueError(f"`mask` must have the same shape as inputs, got {valid.shape} and {pred.shape}.")
+
+    if ignore_nan:
+        valid &= ~np.isnan(pred) if np.issubdtype(pred.dtype, np.number) else True
+        valid &= ~np.isnan(act) if np.issubdtype(act.dtype, np.number) else True
+
+    n = valid.sum()
+    if n == 0:
+        raise ValueError("No valid observations to evaluate.")
+
+    return np.mean(pred[valid] == act[valid])
