@@ -1,0 +1,22 @@
+def half_life_interpolate(horizons, ics):
+    """
+    Find horizon where IC drops to 50% of IC(1).
+    """
+    target = ics[0] / 2
+    
+    # Find crossing point
+    idx = np.where(ics < target)[0]
+    if len(idx) == 0:
+        return np.inf  # Never decays to 50%
+    
+    # Linear interpolation
+    i = idx[0]
+    if i == 0:
+        return horizons[0]
+    
+    # Interpolate between horizons[i-1] and horizons[i]
+    h0, h1 = horizons[i-1], horizons[i]
+    ic0, ic1 = ics[i-1], ics[i]
+    
+    half_life = h0 + (target - ic0) * (h1 - h0) / (ic1 - ic0)
+    return half_life
