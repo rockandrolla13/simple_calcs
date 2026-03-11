@@ -1,0 +1,26 @@
+from scipy.optimize import curve_fit
+
+def fit_exponential_decay(horizons, ics):
+    """
+    Fit IC(τ) = a * exp(-λ * τ) and return half-life.
+    """
+    def exp_decay(t, a, lam):
+        return a * np.exp(-lam * t)
+    
+    # Remove NaNs
+    valid = ~np.isnan(ics)
+    h = horizons[valid]
+    ic = ics[valid]
+    
+    # Fit
+    (a, lam), _ = curve_fit(exp_decay, h, ic, p0=[ic[0], 0.1])
+    
+    half_life = np.log(2) / lam
+    
+    return half_life, a, lam
+
+# Example
+horizons, ics = ic_decay(forecast, actuals, max_horizon=50)
+hl, ic0, decay_rate = fit_exponential_decay(horizons, ics)
+print(f"Half-life: {hl:.1f} periods")
+print(f"Decay rate λ: {decay_rate:.3f}")
